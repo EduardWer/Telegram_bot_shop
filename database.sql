@@ -25,6 +25,6 @@ CREATE TABLE if not exists  Karta(
     Karta_many real not null default 0
 );
 
-insert into Karta(Karta_many) values (0)
+
 
 --insert into Users(user_log_parol, user_rol) values ('eduert:wer','adm')
