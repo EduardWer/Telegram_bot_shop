@@ -6,7 +6,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-
 import config
 import db_class
 import marcups
@@ -86,7 +85,8 @@ async def text_handler(message: types.Message, state: FSMContext):
     try:
         db.update_Karta(float(message.text))
         with open("Karta_history.txt", "a", encoding="utf-8") as file:
-            current_datetime = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
+            current_datetime = datetime.datetime.now() + datetime.timedelta(hours=3,milliseconds=7)
+            current_datetime = current_datetime.strftime("%d-%m-%Y %H:%M")
             file_old = "\n" + f"Карта: {message.text}  Дата: {current_datetime} "
             file.write(file_old)
         await bot.send_message(message.chat.id,f'Вы успешно обновили баланс карты - {message.text} руб')
@@ -121,7 +121,7 @@ async def text_handler(message: types.Message, state: FSMContext):
 @dp.callback_query_handler(lambda query: query.data == 'create_dr_dolg')
 async def button_pressed_handler(callback_query: types.CallbackQuery, state: FSMContext):
     await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, 'Введите кому и сумму и какую сумму')
+    await bot.send_message(callback_query.from_user.id, 'Введите кому и  какую сумму')
     await ButtonState.Dolg_add.set()
 
 
@@ -178,17 +178,17 @@ async def button_pressed_handler(callback_query: types.CallbackQuery, state: FSM
 async def text_handler(message: types.Message, state: FSMContext):
     await state.finish()
     try:
-     now = datetime.datetime.now().hour
+     now = datetime.datetime.now() + datetime.timedelta(hours=3,minutes=7)
      db.update_cassa(float(message.text))
-     if now < 21 and now > 4:
+     if now.hour  < 21 and now.hour > 4:
             with open("Day.txt", "a",encoding="utf-8") as file:
-                current_datetime = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
+                current_datetime = now.strftime("%d-%m-%Y %H:%M")
                 file_old = "\n" + f"Касса: {message.text}  Дата: {current_datetime} "
                 file.write(file_old)
             await message.reply(f'Значение кассы: {message.text} руб')
      else:
             with open("Night.txt", "a",encoding="utf-8") as file:
-                current_datetime = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
+                current_datetime = now.strftime("%d-%m-%Y %H:%M")
 
                 file.write("\n" + f"Касса: {message.text}  Дата: {current_datetime} ")
             await message.reply(f'Значение кассы: {message.text} руб')
